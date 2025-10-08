@@ -1,0 +1,12 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: Advertising stand
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+queue.name: MainQueue
+ONLINE_STORE_BASE_URL: http://localhost:8080
