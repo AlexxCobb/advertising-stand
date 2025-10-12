@@ -14,6 +14,7 @@ public record ProductForStandDto(
         String color,
         String imagePath,
         Integer stockQuantity,
+        BigDecimal discountPrice,
         ProductType type
 ) {
     public ProductForStandDto withUpdatedFields(ProductForStandDto dtoToUpdate) {
@@ -26,6 +27,7 @@ public record ProductForStandDto(
                 dtoToUpdate.color(),
                 dtoToUpdate.imagePath(),
                 dtoToUpdate.stockQuantity(),
+                dtoToUpdate.discountPrice(),
                 this.type()
         );
     }

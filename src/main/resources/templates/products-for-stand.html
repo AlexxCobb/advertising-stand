@@ -1,8 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/header :: common-header('Home')}">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: common-header('Advertising-Stand')}">
 </head>
 <body>
+<style>
+    .product-img {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+    .product-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script th:inline="javascript">
@@ -11,135 +26,195 @@
 
     stompClient.connect({}, function (frame) {
         console.log('WebSocket Connected!');
-
         stompClient.subscribe('/topic/reload', function (messageOutput) {
             console.log('Received update signal:', messageOutput.body);
-
             window.location.reload();
         });
     });
 </script>
+<header>
+    <div id="header" style="background-color: #1c1919;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-15">
+                    <div class="header-logo-text" style="display: flex; align-items: center; padding: 5px 0;">
+                        <a href="#" class="logo">
+                            <img src="/images/favicon.ico" alt="Логотип" style="height: 150px; margin-right: 60px; border-radius: 10px;">
+                        </a>
 
-
-<div class="container-fluid mt-5 mb-5">
-    <div class="row align-items-center justify-content-center">
-        <div class="col-md-2 text-end">
-            <img src="/images/WI-BI.png" class="shop-image my-3" th:src="@{/images/WI-BI.png}" alt="Shop logo">
+                        <div style="display: flex; flex-direction: column; justify-content: center;">
+                            <span class="shop-name" style="color: yellowgreen; font-size: 30px; font-weight: 700; line-height: 1.2;">
+                                Want It - Buy It
+                            </span>
+                            <span class="shop-slogan" style="color: white; font-size: 16px; font-weight: 500;">
+                                (Онлайн магазин электроники)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-5 text-start">
-            <h2 class="welcome-text">Добро пожаловать в онлайн-магазин "Хочешь - купи"!</h2>
-            <p class="row align-items-center justify-content-center">Выберите из наших лучших предложений</p>
+    </div>
+</header>
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="shop" style="text-align: center;">
+                    <a href="http://localhost:8080/api/users/home"  style="display: block; text-decoration: none;">
+                        <div class="shop" style="margin: 0 auto; border-radius: 10px; overflow: hidden;">
+                            <img th:src="@{/images/images.jpg}" alt="Баннер" style="max-width: 50%; height: auto;">
+                        </div>
+                        <div class="shop-body" style="padding-top: 15px;">
+                            <span style="color: white; font-size: 18px; font-weight: 600;">
+                                Нажмите здесь, чтобы перейти к выбору товаров
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-title">
+                    <h3 class="title">НОВЫЕ ТОВАРЫ</h3>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="products-tabs">
+                        <div id="tab1" class="tab-pane active">
+                            <div class="products-slick" data-nav="#slick-nav-1">
 
-<hr>
+                                <div class="product" th:each="product : ${newProducts}">
+                                    <div class="product-img" style="border-radius: 10px; overflow: hidden;">
+                                        <img th:src="${product.imagePath}" th:alt="${product.name}">
+                                        <div class="product-label">
+                                            <span th:if="${product.discountPrice != null and product.discountPrice.compareTo(product.price) < 0}" class="sale">-СКИДКА</span>
+                                            <span class="new">НОВИНКА</span>
+                                        </div>
+                                    </div>
+                                    <div class="product-body" style="background-color: #F5F5DC; border-radius: 10px;">
+                                        <p class="product-category" th:text="${product.brand}">Category</p>
+                                        <h3 class="product-name"><a th:href="@{'/product/' + ${product.publicProductId}}" th:text="${product.name}">Название товара</a></h3>
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">
-        <span th:if="${!#lists.isEmpty(popularProducts)}">Самые популярные товары</span>
-    </h2>
-
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4">
-        <div th:each="product : ${popularProducts}" class="col">
-            <div class="card h-100 product-card card-sand">
-                <img th:src="@{${product.imagePath != null ? product.imagePath : '/images/WI-BI.png'}}"
-                     class="card-img-top shop-image d-block mx-auto" alt="Product image">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title" th:text="${product.name}">Название товара</h5>
-
-                    <div class="mt-auto">
-                        <p class="card-text">
-                            <strong>Цена:</strong>
-                            <span th:text="${#numbers.formatDecimal(product.price, 1, 2)} + ' ₽'"></span>
-                        </p>
-                        <form th:action="@{/api/users/cart}" method="post">
-                            <input type="hidden" name="publicProductId" th:value="${product.publicProductId}">
-                            <div class="input-group mb-2" sec:authorize="!hasRole('ROLE_ADMIN')">
-                                <input type="number" name="quantity" class="form-control" value="1" min="1"
-                                       th:attr="max=${product.stockQuantity}">
-                                <button type="submit" class="btn btn-sm btn-success">В корзину</button>
+                                        <h4 class="product-price">
+                                            <span th:text="${#numbers.formatDecimal(product.discountPrice != null and product.discountPrice.compareTo(product.price) < 0 ? product.discountPrice : product.price, 0, 'COMMA', 2, 'POINT') + '  руб.'}"></span>
+                                            <del th:if="${product.discountPrice != null and product.discountPrice.compareTo(product.price) < 0}" class="product-old-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')  + '  руб.'}"></del>
+                                        </h4>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+                            <div id="slick-nav-1" class="products-slick-nav"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-title">
+                    <h3 class="title">ТОВАРЫ СО СКИДКОЙ</h3>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="products-tabs">
+                        <div id="tab_discount" class="tab-pane active">
+                            <div class="products-slick" data-nav="#slick-nav-discount">
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">
-        <span th:if="${!#lists.isEmpty(newProducts)}">Новинки!</span>
-    </h2>
+                                <div class="product" th:each="product : ${discountProducts}">
+                                    <div class="product-img" style="border-radius: 10px; overflow: hidden;">
+                                        <img th:src="${product.imagePath}" th:alt="${product.name}">
+                                        <div class="product-label">
+                                            <span class="sale">SALE</span>
+                                        </div>
+                                    </div>
+                                    <div class="product-body" style="background-color: #F5F5DC; border-radius: 10px;">
+                                        <p class="product-category" th:text="${product.brand}">Category</p>
+                                        <h3 class="product-name"><a th:href="@{'/product/' + ${product.publicProductId}}" th:text="${product.name}">Название товара</a></h3>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4">
-        <div th:each="product : ${newProducts}" class="col">
-            <div class="card h-100 product-card card-sand">
-                <img th:src="@{${product.imagePath != null ? product.imagePath : '/images/WI-BI.png'}}"
-                     class="card-img-top shop-image d-block mx-auto" alt="Product image">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title" th:text="${product.name}">Название товара</h5>
-
-                    <div class="mt-auto">
-                        <p class="card-text">
-                            <strong>Цена:</strong>
-                            <span th:text="${#numbers.formatDecimal(product.price, 1, 2)} + ' ₽'"></span>
-                        </p>
-                        <form th:action="@{/api/users/cart}" method="post">
-                            <input type="hidden" name="publicProductId" th:value="${product.publicProductId}">
-                            <div class="input-group mb-2" sec:authorize="!hasRole('ROLE_ADMIN')">
-                                <input type="number" name="quantity" class="form-control" value="1" min="1"
-                                       th:attr="max=${product.stockQuantity}">
-                                <button type="submit" class="btn btn-sm btn-success">В корзину</button>
+                                        <h4 class="product-price">
+                                            <span th:text="${#numbers.formatDecimal(product.discountPrice, 0, 'COMMA', 2, 'POINT') + '  руб.'}"></span>
+                                            <del class="product-old-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT') + '  руб.'}"></del>
+                                        </h4>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+                            <div id="slick-nav-discount" class="products-slick-nav"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-title">
+                    <h3 class="title">САМЫЕ ПОПУЛЯРНЫЕ ТОВАРЫ</h3>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="products-tabs">
+                        <div id="tab2" class="tab-pane fade in active">
+                            <div class="products-slick" data-nav="#slick-nav-2">
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">
-        <span th:if="${!#lists.isEmpty(discountProducts)}">Отдадим со скидкой</span>
-    </h2>
+                                <div class="product" th:each="product : ${topProducts}">
+                                    <div class="product-img" style="border-radius: 10px; overflow: hidden;">
+                                        <img th:src="${product.imagePath}" th:alt="${product.name}">
+                                        <div class="product-label">
+                                            <span th:if="${product.discountPrice != null and product.discountPrice.compareTo(product.price) < 0}" class="sale">-СКИДКА</span>
+                                            <span class="new">ТОП</span>
+                                        </div>
+                                    </div>
+                                    <div class="product-body" style="background-color: #F5F5DC; border-radius: 10px;">
+                                        <p class="product-category" th:text="${product.brand}">Category</p>
+                                        <h3 class="product-name"><a th:href="@{'/product/' + ${product.publicProductId}}" th:text="${product.name}">Название товара</a></h3>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4">
-        <div th:each="product : ${discountProducts}" class="col">
-            <div class="card h-100 product-card card-sand">
-                <img th:src="@{${product.imagePath != null ? product.imagePath : '/images/WI-BI.png'}}"
-                     class="card-img-top shop-image d-block mx-auto" alt="Product image">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title" th:text="${product.name}">Название товара</h5>
-
-                    <div class="mt-auto">
-                        <p class="card-text">
-                            <strong>Цена:</strong>
-                            <span th:text="${#numbers.formatDecimal(product.price, 1, 2)} + ' ₽'"></span>
-                        </p>
-                        <form th:action="@{/api/users/cart}" method="post">
-                            <input type="hidden" name="publicProductId" th:value="${product.publicProductId}">
-                            <div class="input-group mb-2" sec:authorize="!hasRole('ROLE_ADMIN')">
-                                <input type="number" name="quantity" class="form-control" value="1" min="1"
-                                       th:attr="max=${product.stockQuantity}">
-                                <button type="submit" class="btn btn-sm btn-success">В корзину</button>
+                                        <h4 class="product-price">
+                                            <span th:text="${#numbers.formatDecimal(product.discountPrice != null and product.discountPrice.compareTo(product.price) < 0 ? product.discountPrice : product.price, 0, 'COMMA', 2, 'POINT') + '  руб.'}"></span>
+                                            <del th:if="${product.discountPrice != null and product.discountPrice.compareTo(product.price) < 0}" class="product-old-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT') + '  руб.'}"></del>
+                                        </h4>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+                            <div id="slick-nav-2" class="products-slick-nav"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<footer id="footer">
+    <div id="bottom-footer" class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    &copy; 2025 Онлайн магазин "Хочешь - Купи"
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/slick.min.js}"></script>
+<script th:src="@{/js/nouislider.min.js}"></script>
+<script th:src="@{/js/jquery.zoom.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
 
-<hr>
-
-<div class="container text-center my-5">
-    <a th:href="@{/api/users/products}" class="btn btn-lg btn-beige">Перейти в каталог товаров</a>
-</div>
-
-<footer th:replace="~{fragments/footer :: copy}"></footer>
 </body>
 </html>
