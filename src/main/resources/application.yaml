@@ -1,12 +1,15 @@
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
 spring:
   application:
     name: Advertising stand
+  jpa:
+    hibernate:
+      ddl-auto: validate
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-queue.name: MainQueue
-ONLINE_STORE_BASE_URL: http://localhost:8080
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+queue.name: ${QUEUE_NAME:MainQueue}
+ONLINE_STORE_URL: ${ONLINE_STORE_BASE_URL:http://localhost:8080}

@@ -48,7 +48,7 @@ public class ProductService {
         productList.computeIfPresent(dtoToUpdate.publicProductId(), (k, existedDto) -> existedDto.withUpdatedFields(dtoToUpdate));
     }
 
-    public void deleteProduct(String publicProductId) { // нужна ли проверка?!
+    public void deleteProduct(String publicProductId) {
         productList.remove(publicProductId);
     }
 

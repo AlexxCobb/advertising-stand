@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    @Value("${ONLINE_STORE_BASE_URL}")
+    @Value("${ONLINE_STORE_URL}")
     private String baseUrl;
 
     @Bean

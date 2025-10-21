@@ -18,7 +18,7 @@ public class RabbitReceiver {
     @RabbitListener(queues = "${queue.name}")
     public void receive(ProductEvent productEvent) {
         var eventType = productEvent.eventType();
-        var productId = productEvent.product().publicProductId();
+        var productId = productEvent.publicProductId();
         switch (eventType) {
             case UPDATE -> productService.updateProduct(productEvent.product());
             case DELETE -> productService.deleteProduct(productId);
