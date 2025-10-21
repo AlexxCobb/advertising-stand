@@ -11,7 +11,7 @@ services:
         condition: service_healthy
     environment:
       - SERVER_PORT=8081
-      - ONLINE_STORE_BASE_URL:http://online-store:8080
+      - ONLINE_STORE_BASE_URL=http://online-store:8080
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=guest
@@ -27,7 +27,7 @@ services:
     depends_on:
       - online_store-db
     environment:
-      - SPRING_DATASOURCE_URL:jdbc:postgresql://online_store-db/online_store
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://online_store-db/online_store
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=qweqwe
       - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
