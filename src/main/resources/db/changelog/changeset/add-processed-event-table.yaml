@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-processed-event-table
+      author: a.zinovev
+      changes:
+        - sqlFile:
+            path: classpath:db/changelog/sql/add-processed-event-table.sql
