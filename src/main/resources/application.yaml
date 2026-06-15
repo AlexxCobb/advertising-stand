@@ -6,10 +6,27 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:file:./data/advertising-stand-db}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:sa}
+  liquibase:
+    default-schema: public
+    change-log: classpath:db/changelog/db.changelog-master.yaml
   rabbitmq:
     host: ${SPRING_RABBITMQ_HOST:localhost}
     port: ${SPRING_RABBITMQ_PORT:5672}
     username: ${SPRING_RABBITMQ_USERNAME:guest}
     password: ${SPRING_RABBITMQ_PASSWORD:guest}
-queue.name: ${QUEUE_NAME:MainQueue}
+    listener:
+      simple:
+        concurrency: 1
+        max-concurrency: 1
+        retry:
+          enabled: true
+          initial-interval: 1s
+          max-attempts: 3
+          multiplier: 2
+queue.name: ${QUEUE_NAME:product.queue}
 ONLINE_STORE_URL: ${ONLINE_STORE_BASE_URL:http://localhost:8080}

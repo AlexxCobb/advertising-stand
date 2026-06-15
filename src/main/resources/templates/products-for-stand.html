@@ -100,7 +100,7 @@
                                     </div>
                                     <div class="product-body" style="background-color: #F5F5DC; border-radius: 10px;">
                                         <p class="product-category" th:text="${product.brand}">Category</p>
-                                        <h3 class="product-name"><a th:href="@{'/product/' + ${product.publicProductId}}" th:text="${product.name}">Название товара</a></h3>
+                                        <h3 class="product-name" th:text="${product.name}">Название товара</h3>
 
                                         <h4 class="product-price">
                                             <span th:text="${#numbers.formatDecimal(product.discountPrice != null and product.discountPrice.compareTo(product.price) < 0 ? product.discountPrice : product.price, 0, 'COMMA', 2, 'POINT') + '  руб.'}"></span>
@@ -140,7 +140,7 @@
                                     </div>
                                     <div class="product-body" style="background-color: #F5F5DC; border-radius: 10px;">
                                         <p class="product-category" th:text="${product.brand}">Category</p>
-                                        <h3 class="product-name"><a th:href="@{'/product/' + ${product.publicProductId}}" th:text="${product.name}">Название товара</a></h3>
+                                        <h3 class="product-name" th:text="${product.name}">Название товара</h3>
 
                                         <h4 class="product-price">
                                             <span th:text="${#numbers.formatDecimal(product.discountPrice, 0, 'COMMA', 2, 'POINT') + '  руб.'}"></span>
@@ -198,17 +198,7 @@
         </div>
     </div>
 </div>
-<footer id="footer">
-    <div id="bottom-footer" class="section">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    &copy; 2025 Онлайн магазин "Хочешь - Купи"
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
+<footer th:replace="~{fragments/footer :: copy}"></footer>
 <script th:src="@{/js/jquery.min.js}"></script>
 <script th:src="@{/js/bootstrap.min.js}"></script>
 <script th:src="@{/js/slick.min.js}"></script>

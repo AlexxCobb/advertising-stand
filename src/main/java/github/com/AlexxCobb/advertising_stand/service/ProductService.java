@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductService {
 
-    private final ConcurrentHashMap<String, ProductForStandDto> productList = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<String, ProductForStandDto> productMap = new ConcurrentHashMap<>();
     private final WebClient webClient;
 
     public void loadProducts() {
@@ -25,11 +26,15 @@ public class ProductService {
                         .retrieve()
                         .bodyToFlux(ProductForStandDto.class)
                         .collectList()
+                        .timeout(Duration.ofSeconds(10))
                         .block();
-        if (products != null && !products.isEmpty()) {
-            productList.putAll(products.stream().collect(Collectors.toMap(ProductForStandDto::publicProductId,
-                                                                          Function.identity())));
+        if (products == null) {
+            return;
         }
+        var updatedProducts =
+                products.stream().collect(Collectors.toMap(ProductForStandDto::publicProductId, Function.identity()));
+        var newMap = new ConcurrentHashMap<>(updatedProducts);
+        productMap = newMap;
     }
 
     public List<ProductForStandDto> getPopularProducts() {
@@ -45,15 +50,16 @@ public class ProductService {
     }
 
     public void updateProduct(ProductForStandDto dtoToUpdate) {
-        productList.computeIfPresent(dtoToUpdate.publicProductId(), (k, existedDto) -> existedDto.withUpdatedFields(dtoToUpdate));
+        productMap.computeIfPresent(dtoToUpdate.publicProductId(),
+                                    (k, existedDto) -> existedDto.withUpdatedFields(dtoToUpdate));
     }
 
     public void deleteProduct(String publicProductId) {
-        productList.remove(publicProductId);
+        productMap.remove(publicProductId);
     }
 
     private List<ProductForStandDto> filterProductsByType(ProductType type) {
-        return productList.values().stream()
+        return productMap.values().stream()
                 .filter(productForStandDto -> productForStandDto.type().equals(type))
                 .toList();
     }
